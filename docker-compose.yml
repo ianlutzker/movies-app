@@ -1,0 +1,46 @@
+version: '3.1'
+
+services:
+
+  client:
+    build: ./client/
+    restart: always
+    ports:
+      - "8000:8000"
+    stdin_open: true
+
+  server:
+    build: ./server/
+    restart: always
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongo  
+
+  mongo:
+    image: mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    
+    # Uncomment to store the DB data locally in the project folder
+    #volumes:
+    #  - "$PWD/mongo-data:/data/db"  
+    
+    # Use root/example as user/password credentials
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+
+  # Uncomment to enable a visual web interface to manage Mongo DB
+  #mongo-express:
+  #  image: mongo-express
+  #  restart: always
+  #  ports:
+  #    - "8081:8081"
+  #  depends_on:
+  #    - mongo
+  #  environment:
+  #    ME_CONFIG_MONGODB_ADMINUSERNAME: root
+  #    ME_CONFIG_MONGODB_ADMINPASSWORD: example
+  #    ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/      

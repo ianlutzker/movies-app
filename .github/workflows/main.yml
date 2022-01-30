@@ -1,0 +1,42 @@
+name: movies-app CI/CD
+
+# Triggers the job on a new pull is request
+#on:
+#  pull_request:
+#    branches:
+#      - main
+
+# Triggers the job on a new push to the repository
+on:
+  push:
+    branches:
+      - main      
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Context
+      uses: okteto/context@latest
+      with:
+        token: ${{ secrets.OKTETO_TOKEN }}
+
+    - name: "Activate Namespace"
+      uses: okteto/namespace@latest
+      with:
+        name: ianlutzker
+        
+    - name: "Destroy the current pipeline"
+      uses: okteto/destroy-pipeline@latest
+      with:
+        name: movies-app
+        #name: pr-${{ github.event.number }}        
+
+    - name: "Trigger the new pipeline"
+      uses: okteto/pipeline@latest
+      with:
+        name: movies-app
+        timeout: 8m
+        #name: pr-${{ github.event.number }}
+        #skipIfExists: true
+        #variables: "DB_HOST=mysql,CONFIG_PATH=/tmp/config.yaml"
